@@ -1,0 +1,10 @@
+1  high card - worth rank of card
+2  pair - worth rank of card
+3  two pair - worth rank of pair1 + rank of pair2
+4  three of a kind - worth rank of card
+5  straight - worth highest card in straight
+6  flush - worth highest card in flush
+7  full house - worth rank of three of a kind
+8  four of a kind - worth rank of card
+9  straigh flush - worth highest card in straight
+10 royal flush - best in game, draw if two
