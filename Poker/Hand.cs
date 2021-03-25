@@ -110,6 +110,7 @@ namespace Poker
     // This is the actual hand that a player will have
     public class PokerHand : Hand
     {
+        // Returns the 'value' of the hand based on the scoring in hands.txt
         public List<Tuple<int,int>> GetValue()
         {
             Order();
