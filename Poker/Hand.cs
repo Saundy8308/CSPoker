@@ -51,8 +51,9 @@ namespace Poker
         {
             foreach(Card card in cards)
             {
-                Console.WriteLine(card.ToString());
+                Console.Write(card.ToString()+",");
             }
+            Console.WriteLine();
         }
 
         public Card First()
@@ -110,6 +111,7 @@ namespace Poker
     // This is the actual hand that a player will have
     public class PokerHand : Hand
     {
+        // Returns the 'value' of the hand based on the scoring in hands.txt
         public List<Tuple<int,int>> GetValue()
         {
             Order();
