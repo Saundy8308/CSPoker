@@ -39,11 +39,11 @@ namespace Poker
         {
             Player[] playersArr = new Player[numOfPlayers];
 
-            playersArr[0] = (new Player(new PokerHand(), true));
+            playersArr[0] = (new Player(new Hand(), true));
 
             for (int i = 1; i < numOfPlayers; i++)
             {
-                playersArr[i] = (new Computer(new PokerHand()));
+                playersArr[i] = (new Computer(new Hand()));
             }
 
             players = new List<Player>(playersArr);
@@ -77,16 +77,44 @@ namespace Poker
             Hand communityCards = new Hand();
             Draw(communityCards, 5);
 
+            List<Player> playersIn = players;
+
+            int communityCardsShown = 0; // Represents the number of community cards visible to the player
+            int pot = 0; // Number of chips in the pot
+
+            // Dealing cards to players
             for (int i = 0; i < players.Count; i++)
             {
                 Draw(players[i].pHand, 2);
             }
 
-            communityCards.DisplayHand();
-
-            foreach (Player p in players)
+            bool roundOver = false;
+            while (!roundOver)
             {
-                p.pHand.DisplayHand();
+                Console.WriteLine($"POT:        {pot}");
+                Console.WriteLine($"YOUR CHIPS: {players[0].Chips()}");
+                Console.Write("\nYOUR HAND:  ");
+                players[0].pHand.DisplayHand();
+                Console.Write("COMMUNITY:  ");
+                communityCards.DisplayHand(true, communityCardsShown);
+                Console.WriteLine();
+
+                // Taking bets
+                for (int i = 0; i < playersIn.Count; i++)
+                {
+                    int pBet = playersIn[i].TakeBet(); // Returns -1 if they want to fold
+                    if (pBet >= 0)
+                    {
+                        pot += pBet;
+                    }
+                    else
+                    {
+
+                    }
+
+                }
+
+                communityCardsShown++;
             }
         }
 

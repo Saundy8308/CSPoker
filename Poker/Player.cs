@@ -6,7 +6,7 @@ namespace Poker
     // Player class used to define anyone playing the game AI or otherwise
     class Player
     {
-        public PokerHand pHand;
+        public Hand pHand;
 
         protected int chips;
         protected string name; // Implement later on
@@ -14,32 +14,19 @@ namespace Poker
         protected bool currentPlayer; // Is this the player
         protected bool computer; // Is this a computer
 
-        public Player(PokerHand hand, bool player, int chips = 500)
+        public Player(Hand hand, bool player, int startingChips = 500)
         {
             pHand = hand;
             currentPlayer = player;
+            chips = startingChips;
         }
 
         // Returns the cards that were in the hand so they can be put back in the deck
-        public PokerHand ClearHand()
+        public Hand ClearHand()
         {
-            PokerHand temp = pHand;
+            Hand temp = pHand;
             pHand.Clear();
             return temp;
-        }
-
-        // Returns wether or not the amount can be removed
-        public bool BetChips(int amount)
-        {
-            if (chips - amount > 0)
-            {
-                chips -= amount;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         // Adds chips to 'chips'
@@ -53,13 +40,44 @@ namespace Poker
         {
             return chips > 0;
         }
+        public int Chips()
+        {
+            return chips;
+        }
+
+        // Take bet
+        public virtual int TakeBet() // Returns -1 if the player wants to Fold
+        {
+            Console.WriteLine("How much would you like to bet (-1 to fold): ");
+            bool goodIn = false;
+            int bet = 0;
+            while (!goodIn)
+            {
+                string betIn = Console.ReadLine();
+                goodIn = Int32.TryParse(betIn, out bet) && bet<=chips;
+            }
+
+            chips -= bet;
+            return bet;
+        }
+
+        public bool IsPlayer()
+        {
+            return currentPlayer;
+        }
     }
 
     class Computer : Player
     {
-        public Computer(PokerHand hand) : base(hand, false)
+        public Computer(Hand hand) : base(hand, false)
         {
             computer = true;
+        }
+
+        // AI for valuing hand and placing bets
+        public override int TakeBet()
+        {
+            return 0;
         }
     }
 }

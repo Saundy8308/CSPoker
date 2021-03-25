@@ -47,11 +47,27 @@ namespace Poker
             //returns -1 if not present
         }
 
-        public void DisplayHand()
+        public void DisplayHand(bool doAmount = false, int number = 0)
         {
-            foreach(Card card in cards)
+            if (!doAmount || number > Size)
             {
-                Console.Write(card.ToString()+",");
+                number = Size;
+            }
+
+            for (int i = 0; i < number; i++)
+            {
+                if (i != number - 1)
+                {
+                    Console.Write(this[i].ToString() + ",");
+                }
+                else
+                {
+                    Console.Write(this[i].ToString());
+                }
+            }
+            for (int i = 0; i < Size-number; i++)
+            {
+                Console.Write("---");
             }
             Console.WriteLine();
         }
