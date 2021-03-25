@@ -8,7 +8,9 @@ namespace Poker
 
         static void Main(string[] args)
         {
-            Play();
+            Game game = new Game(5);
+            game.Play();
+            Console.WriteLine("GAME OVER...");
 
             //PokerHand p1hand = new PokerHand();
 
@@ -25,23 +27,49 @@ namespace Poker
             p1hand.AddCard(new Card(2,2));*/
         }
 
-        public static void Play()
+    }
+
+    class Game
+    {
+        private List<Player> players;
+        private Pack pack;
+
+        // Setting up game
+        public Game(int numOfPlayers)
+        {
+            players.Add(new Player(new Hand(), true));
+
+            for (int i = 0; i < numOfPlayers - 1; i++)
+            {
+                players.Add(new Computer(new Hand()));
+            }
+
+            pack = new Pack();
+            pack.Shuffle();
+        }
+
+        // Called at the start of the game
+        public void Play()
+        {
+            bool winner = false;
+            // Keep going until winner is found
+            while (!winner)
+            {
+                DoRound();
+            }
+
+        }
+
+        public void DoRound()
         {
             Pack pack = new Pack();
             pack.Shuffle();
-
-
         }
 
-        public static void DoRound()
-        {
-            
-        }
-
-        public static void DisplayHandValue(List<Tuple<int,int>> list) // Display the output of PokerHand.GetValue() in a readable way
+        public void DisplayHandValue(List<Tuple<int, int>> list) // Display the output of PokerHand.GetValue() in a readable way
         {
             Console.Write("{");
-            foreach (Tuple<int,int> tup in list)
+            foreach (Tuple<int, int> tup in list)
             {
                 Console.Write($"({tup.Item1},{tup.Item2}),");
             }

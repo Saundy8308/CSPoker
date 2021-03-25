@@ -9,6 +9,8 @@ namespace Poker
         protected Hand pHand;
         protected int chips;
 
+        protected string name; // Implement later on
+
         protected bool currentPlayer; // Is this the player
         protected bool computer; // Is this a computer
 
