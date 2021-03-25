@@ -6,33 +6,40 @@ namespace Poker
     // Player class used to define anyone playing the game AI or otherwise
     class Player
     {
-        protected Hand pHand;
-        protected int chips;
+        public PokerHand pHand;
 
+        protected int chips;
         protected string name; // Implement later on
 
         protected bool currentPlayer; // Is this the player
         protected bool computer; // Is this a computer
 
-        public Player(Hand hand, bool player, int chips = 500)
+        public Player(PokerHand hand, bool player, int chips = 500)
         {
             pHand = hand;
             currentPlayer = player;
         }
 
         // Returns the cards that were in the hand so they can be put back in the deck
-        public Hand ClearHand()
+        public PokerHand ClearHand()
         {
-            Hand temp = pHand;
+            PokerHand temp = pHand;
             pHand.Clear();
             return temp;
         }
 
-        // Returns number of chips for easy use
-        public int BetChips(int amount)
+        // Returns wether or not the amount can be removed
+        public bool BetChips(int amount)
         {
-            chips -= amount;
-            return amount;
+            if (chips - amount > 0)
+            {
+                chips -= amount;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         // Adds chips to 'chips'
@@ -40,11 +47,17 @@ namespace Poker
         {
             chips += amount;
         }
+
+        // As expected returns wether or nor this player has chips
+        public bool HasChips()
+        {
+            return chips > 0;
+        }
     }
 
     class Computer : Player
     {
-        public Computer(Hand hand) : base(hand, false)
+        public Computer(PokerHand hand) : base(hand, false)
         {
             computer = true;
         }

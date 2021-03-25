@@ -92,5 +92,13 @@ namespace Poker
             }
 
         }
+
+        public void AddCard(Hand cards)
+        {
+            for (int i = 0; i < cards.Size; i++)
+            {
+                AddCard(cards[i]);
+            }
+        }
     }
 }

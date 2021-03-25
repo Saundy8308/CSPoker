@@ -51,8 +51,9 @@ namespace Poker
         {
             foreach(Card card in cards)
             {
-                Console.WriteLine(card.ToString());
+                Console.Write(card.ToString()+",");
             }
+            Console.WriteLine();
         }
 
         public Card First()

@@ -37,13 +37,17 @@ namespace Poker
         // Setting up game
         public Game(int numOfPlayers)
         {
-            players.Add(new Player(new Hand(), true));
+            Player[] playersArr = new Player[numOfPlayers];
 
-            for (int i = 0; i < numOfPlayers - 1; i++)
+            playersArr[0] = (new Player(new PokerHand(), true));
+
+            for (int i = 1; i < numOfPlayers; i++)
             {
-                players.Add(new Computer(new Hand()));
+                playersArr[i] = (new Computer(new PokerHand()));
             }
 
+            players = new List<Player>(playersArr);
+            
             pack = new Pack();
             pack.Shuffle();
         }
@@ -56,14 +60,56 @@ namespace Poker
             while (!winner)
             {
                 DoRound();
+                CleanPlayers();
+                if (players.Count <= 1)
+                {
+                    winner = true;
+                }
             }
 
         }
 
+        // Do a round
         public void DoRound()
         {
-            Pack pack = new Pack();
             pack.Shuffle();
+
+            Hand communityCards = new Hand();
+            Draw(communityCards, 5);
+
+            for (int i = 0; i < players.Count; i++)
+            {
+                Draw(players[i].pHand, 2);
+            }
+
+            communityCards.DisplayHand();
+
+            foreach (Player p in players)
+            {
+                p.pHand.DisplayHand();
+            }
+        }
+
+        // Used to easily transfer crds from pack to a hand
+        public void Draw(Hand h, int amnt)
+        {
+            for (int i = 0; i < amnt; i++)
+            {
+                h.AddCard(pack.DealCard());
+            }
+        }
+
+        // Used to check if there are any players with 0 chips if so, removes them
+        public void CleanPlayers()
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (!players[i].HasChips())
+                {
+                    players.RemoveAt(i);
+                    i--;                   //##################### POSSIBLE ERROR HERE
+                }
+            }
         }
 
         public void DisplayHandValue(List<Tuple<int, int>> list) // Display the output of PokerHand.GetValue() in a readable way
