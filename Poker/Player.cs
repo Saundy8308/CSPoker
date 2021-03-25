@@ -77,7 +77,7 @@ namespace Poker
         // AI for valuing hand and placing bets
         public override int TakeBet()
         {
-            return 0;
+            return -1;
         }
     }
 }

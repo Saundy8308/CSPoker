@@ -60,7 +60,8 @@ namespace Poker
             while (!winner)
             {
                 DoRound();
-                CleanPlayers();
+                Console.WriteLine("Round over");
+                //CleanPlayers();
                 if (players.Count <= 1)
                 {
                     winner = true;
@@ -83,35 +84,51 @@ namespace Poker
             int pot = 0; // Number of chips in the pot
 
             // Dealing cards to players
-            for (int i = 0; i < players.Count; i++)
+            for (int i = 0; i < playersIn.Count; i++)
             {
-                Draw(players[i].pHand, 2);
+                Draw(playersIn[i].pHand, 2);
             }
 
             bool roundOver = false;
+            bool playerFolded = false;
             while (!roundOver)
             {
-                Console.WriteLine($"POT:        {pot}");
-                Console.WriteLine($"YOUR CHIPS: {players[0].Chips()}");
-                Console.Write("\nYOUR HAND:  ");
-                players[0].pHand.DisplayHand();
-                Console.Write("COMMUNITY:  ");
-                communityCards.DisplayHand(true, communityCardsShown);
-                Console.WriteLine();
+                // Displaying information about the round if the player is still in
+                if (!playerFolded)
+                {
+                    Console.WriteLine($"POT:        {pot}");
+                    Console.WriteLine($"YOUR CHIPS: {players[0].Chips()}");
+                    Console.Write("\nYOUR HAND:  ");
+                    players[0].pHand.DisplayHand();
+                    Console.Write("COMMUNITY:  ");
+                    communityCards.DisplayHand(true, communityCardsShown);
+                    Console.WriteLine();
+                }
 
                 // Taking bets
                 for (int i = 0; i < playersIn.Count; i++)
                 {
                     int pBet = playersIn[i].TakeBet(); // Returns -1 if they want to fold
-                    if (pBet >= 0)
+                    if (pBet >= 0) // not folding
                     {
                         pot += pBet;
                     }
-                    else
+                    else // folding
                     {
+                        if (playersIn[i].IsPlayer())
+                        {
+                            playerFolded = true;
+                        }
 
+                        playersIn.RemoveAt(i);
+                        i--;
                     }
 
+                }
+
+                if (playersIn.Count >= 1)
+                {
+                    roundOver = true;
                 }
 
                 communityCardsShown++;
