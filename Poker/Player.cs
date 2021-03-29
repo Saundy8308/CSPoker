@@ -7,6 +7,7 @@ namespace Poker
     class Player
     {
         public Hand pHand;
+        private Hand communityCards;
 
         protected int chips;
         protected string name; // Implement later on
@@ -19,6 +20,11 @@ namespace Poker
             pHand = hand;
             currentPlayer = player;
             chips = startingChips;
+        }
+
+        public void SetCommCards(Hand commCards)
+        {
+            communityCards = commCards;
         }
 
         // Returns the cards that were in the hand so they can be put back in the deck

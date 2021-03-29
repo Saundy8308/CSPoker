@@ -61,7 +61,7 @@ namespace Poker
             {
                 DoRound();
                 Console.WriteLine("Round over");
-                //CleanPlayers();
+                CleanPlayers();
                 if (players.Count <= 1)
                 {
                     winner = true;
@@ -78,7 +78,7 @@ namespace Poker
             Hand communityCards = new Hand();
             Draw(communityCards, 5);
 
-            List<Player> playersIn = players;
+            List<Player> playersIn = players; // PlayersIn are the players that haven't folded this round
 
             int communityCardsShown = 0; // Represents the number of community cards visible to the player
             int pot = 0; // Number of chips in the pot
@@ -123,10 +123,9 @@ namespace Poker
                         playersIn.RemoveAt(i);
                         i--;
                     }
-
                 }
 
-                if (playersIn.Count >= 1)
+                if (playersIn.Count <= 1)
                 {
                     roundOver = true;
                 }
