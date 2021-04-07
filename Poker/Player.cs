@@ -7,7 +7,7 @@ namespace Poker
     class Player
     {
         public Hand pHand;
-        private Hand communityCards;
+        protected Hand communityCards;
 
         protected int chips;
         protected string name; // Implement later on
@@ -40,7 +40,6 @@ namespace Poker
         {
             chips += amount;
         }
-
         // As expected returns wether or nor this player has chips
         public bool HasChips()
         {
@@ -83,7 +82,37 @@ namespace Poker
         // AI for valuing hand and placing bets
         public override int TakeBet()
         {
-            return -1;
+            List<Card> allCards = pHand.GetCards();
+            allCards.AddRange(communityCards.GetCards());
+
+            PokerHand totalHand = new PokerHand();
+            totalHand.SetCards(allCards);
+
+            List<Tuple<int,int>> value = totalHand.GetValue();
+
+            // Most of this is done randomly just to generate an amount to bet
+
+            int roughValue = 0;
+
+            foreach(Tuple<int,int> tup in value)
+            {
+                roughValue += tup.Item1 * tup.Item2 / 4;
+            }
+            if (roughValue > 50)
+            {
+                roughValue = 50;
+            }
+            Random rnd = new Random();
+            int rndInt = rnd.Next(10) - 5; // Random int from 5 to -5
+
+            rndInt = 0; // For testing
+
+            double percent = (roughValue + rndInt) / 100d;
+            Console.WriteLine(percent);
+            int bet = Convert.ToInt32(chips * percent);
+
+            Console.WriteLine(bet); // TEST
+            return bet;
         }
     }
 }

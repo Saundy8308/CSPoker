@@ -76,11 +76,10 @@ namespace Poker
             pack.Shuffle();
 
             Hand communityCards = new Hand();
-            Draw(communityCards, 5);
+            
 
             List<Player> playersIn = players; // PlayersIn are the players that haven't folded this round
 
-            int communityCardsShown = 0; // Represents the number of community cards visible to the player
             int pot = 0; // Number of chips in the pot
 
             // Dealing cards to players
@@ -96,19 +95,25 @@ namespace Poker
                 // Displaying information about the round if the player is still in
                 if (!playerFolded)
                 {
-                    Console.WriteLine($"POT:        {pot}");
+                    Console.WriteLine($"\nPOT:        {pot}");
                     Console.WriteLine($"YOUR CHIPS: {players[0].Chips()}");
                     Console.Write("\nYOUR HAND:  ");
                     players[0].pHand.DisplayHand();
                     Console.Write("COMMUNITY:  ");
-                    communityCards.DisplayHand(true, communityCardsShown);
+                    communityCards.DisplayHand(true, 5);
                     Console.WriteLine();
                 }
 
                 // Taking bets
                 for (int i = 0; i < playersIn.Count; i++)
                 {
+                    Console.WriteLine($"Player {i}'s turn");
+                    
+                    playersIn[i].SetCommCards(communityCards);
+
+                    playersIn[i].pHand.DisplayHand();
                     int pBet = playersIn[i].TakeBet(); // Returns -1 if they want to fold
+
                     if (pBet >= 0) // not folding
                     {
                         pot += pBet;
@@ -130,11 +135,11 @@ namespace Poker
                     roundOver = true;
                 }
 
-                communityCardsShown++;
+                Draw(communityCards, 2);
             }
         }
 
-        // Used to easily transfer crds from pack to a hand
+        // Used to easily transfer cards from pack to a hand
         public void Draw(Hand h, int amnt)
         {
             for (int i = 0; i < amnt; i++)
@@ -156,15 +161,6 @@ namespace Poker
             }
         }
 
-        public void DisplayHandValue(List<Tuple<int, int>> list) // Display the output of PokerHand.GetValue() in a readable way
-        {
-            Console.Write("{");
-            foreach (Tuple<int, int> tup in list)
-            {
-                Console.Write($"({tup.Item1},{tup.Item2}),");
-            }
-            Console.Write("}");
-        }
     }
 
 }

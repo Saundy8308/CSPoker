@@ -117,6 +117,11 @@ namespace Poker
 
         }
 
+        public List<Card> GetCards()
+        {
+            return cards;
+        }
+
         public void Clear()
         {
             cards.Clear();
@@ -128,7 +133,7 @@ namespace Poker
     public class PokerHand : Hand
     {
         // Returns the 'value' of the hand based on the scoring in hands.txt
-        public List<Tuple<int,int>> GetValue()
+        public List<Tuple<int,int>> GetValue(bool output=false)
         {
             Order();
 
@@ -175,7 +180,6 @@ namespace Poker
                         if (sets[ii].Item2 == cards[i].GetRank())
                         {
                             int temp = sets[ii].Item1;
-                            Console.WriteLine(temp);
                             sets[ii] = new Tuple<int, int>(temp + 1, cards[i].GetRank());
                             added = true;
                         }
@@ -253,6 +257,16 @@ namespace Poker
                 }
             }
 
+            if (output)
+            {
+                Console.Write("{");
+                foreach (Tuple<int, int> tup in sets)
+                {
+                    Console.Write($"({tup.Item1},{tup.Item2}),");
+                }
+                Console.Write("}");
+            }
+
             return sets;
         }
 
@@ -276,6 +290,11 @@ namespace Poker
                     }
                 }
             }
+        }
+
+        public void SetCards(List<Card> toSet)
+        {
+            cards = toSet;
         }
     }
 }
