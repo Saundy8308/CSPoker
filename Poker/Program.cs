@@ -81,6 +81,7 @@ namespace Poker
             List<Player> playersIn = players; // PlayersIn are the players that haven't folded this round
 
             int pot = 0; // Number of chips in the pot
+            int bet = 0; // The amount that a player must match to remain in the game
 
             // Dealing cards to players
             for (int i = 0; i < playersIn.Count; i++)
@@ -112,11 +113,13 @@ namespace Poker
                     playersIn[i].SetCommCards(communityCards);
 
                     playersIn[i].pHand.DisplayHand();
-                    int pBet = playersIn[i].TakeBet(); // Returns -1 if they want to fold
+                    int pBet = playersIn[i].TakeBet(bet); // Returns -1 if they want to fold
 
                     if (pBet >= 0) // not folding
                     {
                         pot += pBet;
+                        bet = playersIn[i].ChipsIn();
+                        Console.WriteLine(bet + " =bet"); // TEST
                     }
                     else // folding
                     {
