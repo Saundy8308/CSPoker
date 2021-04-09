@@ -11,17 +11,18 @@ namespace Poker
 
         protected int chips;
         protected int chipsIn; // Number of chips that the player has currently betted
-        protected string name; // Implement later on
+        protected string name; // Name of the player/computer
 
         protected bool currentPlayer; // Is this the player
         protected bool computer; // Is this a computer
 
-        public Player(Hand hand, bool player, int startingChips = 500)
+        public Player(Hand hand, bool player, int startingChips = 500, string n = "Player")
         {
             pHand = hand;
             currentPlayer = player;
             chips = startingChips;
             chipsIn = 0;
+            name = n;
         }
 
         public void SetCommCards(Hand commCards)
@@ -74,6 +75,11 @@ namespace Poker
             return bet;
         }
 
+        public string GetName()
+        {
+            return name;
+        }
+
         public bool IsPlayer()
         {
             return currentPlayer;
@@ -87,7 +93,7 @@ namespace Poker
 
     class Computer : Player
     {
-        public Computer(Hand hand) : base(hand, false)
+        public Computer(Hand hand) : base(hand, false, 500, "Computer")
         {
             computer = true;
         }
@@ -95,7 +101,9 @@ namespace Poker
         // AI for valuing hand and placing bets
         public override int TakeBet(int matchBet)
         {
-            List<Card> allCards = pHand.GetCards();
+            Console.WriteLine(matchBet);
+
+            List<Card> allCards = new List<Card>(pHand.GetCards());
             allCards.AddRange(communityCards.GetCards());
 
             PokerHand totalHand = new PokerHand();
@@ -115,108 +123,61 @@ namespace Poker
             Random rnd = new Random();
             int rndInt = rnd.Next(10) - 5; // Random int from 5 to -5
 
-            rndInt = 0; // For testing TEST
+            rndInt = 0; // TEST
 
-            double percent = (roughValue + rndInt) / 100d;
+            int val = roughValue + rndInt;
+            if (val > 100) { val = 100; } // val is a number from 1 to 100 representing the hands value
+
+            double percent = val / 100d;
             Console.WriteLine(percent); // TEST
             int bet = Convert.ToInt32(chips * percent);
-
             Console.WriteLine(bet); // TEST
 
-            /*
-             I THINK THERE IS A MUCH SMOOTHER WAY OF DOING THIS
-             \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-             */
+            // RAISE, CHECK/CALL, FOLD
+            rnd = new Random();
+            rndInt = rnd.Next(100);
 
-
-            if (chipsIn < matchBet) // The AI must bet higher to stay in (Call, Raise or Fold)
+            if (rndInt < val && bet > matchBet)
             {
-                if (bet < matchBet) // The AI predicts their hand is worth less than the current bet
-                {
-                    rnd = new Random();
-                    bool match = rnd.Next(2) == 0; // Whether or not the AI will match the current bet (very basic)
-
-                    if (match)
-                    {
-                        Console.WriteLine("Call");
-                        chips -= matchBet - bet;
-                        chipsIn += matchBet - bet;
-                        return matchBet - bet;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Fold");
-                        return -1;
-                    }
-                }
-                else if (bet >= matchBet) // The AI predicts their hand is worth more than or equal to the current bet
-                {
-                    rnd = new Random();
-                    bool match = rnd.Next(2) == 0; // Whether or not the AI will match the current bet (very basic)
-
-                    if (match)
-                    {
-                        Console.WriteLine("Call");
-                        chips -= matchBet - bet;
-                        chipsIn += matchBet - bet;
-                        return matchBet - bet;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Raise");
-                        chips -= bet - matchBet;
-                        chipsIn += bet - matchBet;
-                        return bet - matchBet;
-                    }
-                }
+                // Raise
+                Console.WriteLine($"{name} is Raising to {bet}...");
+                return Bet(bet - chipsIn);
             }
-
-            else if (chipsIn > matchBet) // This SHOULD never happen because matchBet should always be the highest number of chipsIn
+            else if (rndInt > val * matchBet)
             {
-                Console.WriteLine("ERROR : chipsIn is higher thatn matchBet");
+                // Fold
+                Console.WriteLine($"{name} is Folding...");
                 return -1;
             }
-
-            else // chipsIn and matchBet are the same, the AI can check if they want (Check, Fold or Raise)
+            else
             {
-                if (bet < matchBet) // The AI predicts their hand is worth less than the current bet
+                // Call/Check
+                if (chipsIn == matchBet)
                 {
-                    rnd = new Random();
-                    bool match = rnd.Next(2) == 0; // Whether or not the AI will match the current bet (very basic)
-
-                    if (match)
-                    {
-                        Console.WriteLine("Check");
-                        return 0;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Fold");
-                        return -1;
-                    }
+                    Console.WriteLine($"{name} is Checking...");
+                    return 0;
                 }
-                else if (bet >= matchBet) // The AI predicts their hand is worth more than or equal to the current bet
+                else
                 {
-                    rnd = new Random();
-                    bool match = rnd.Next(2) == 0; // Whether or not the AI will match the current bet (very basic)
-
-                    if (match)
-                    {
-                        Console.WriteLine("Check");
-                        return 0;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Raise");
-                        chips -= bet - matchBet;
-                        chipsIn += bet - matchBet;
-                        return bet - matchBet;
-                    }
+                    Console.WriteLine($"{name} is Calling...");
+                    return Bet(matchBet - chipsIn);
                 }
             }
 
             Console.WriteLine("ERROR : TakeBet DIDN'T RETURN A VALUE, FOLDING");
             return -1;
+        }
+
+        // Easy method for betting an amount of chips
+        public int Bet(int amount)
+        {
+            chipsIn += amount;
+            chips -= amount;
+            if (chips < 0) // ERROR CHECKING
+            {
+                Console.WriteLine("ERROR: chips is negative");
+            }
+            return amount;
         }
     }
 }

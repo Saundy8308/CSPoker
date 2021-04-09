@@ -34,12 +34,18 @@ namespace Poker
         private List<Player> players;
         private Pack pack;
 
+        private int STARTINGCHIPS;
+
         // Setting up game
         public Game(int numOfPlayers)
         {
-            Player[] playersArr = new Player[numOfPlayers];
+            STARTINGCHIPS = 500;
 
-            playersArr[0] = (new Player(new Hand(), true));
+            Player[] playersArr = new Player[numOfPlayers];
+            Console.WriteLine("ENTER NAME: ");
+            string name = Console.ReadLine();
+
+            playersArr[0] = (new Player(new Hand(), true, STARTINGCHIPS, name));
 
             for (int i = 1; i < numOfPlayers; i++)
             {
@@ -78,7 +84,7 @@ namespace Poker
             Hand communityCards = new Hand();
             
 
-            List<Player> playersIn = players; // PlayersIn are the players that haven't folded this round
+            List<Player> playersIn = new List<Player>(players); // PlayersIn are the players that haven't folded this round
 
             int pot = 0; // Number of chips in the pot
             int bet = 0; // The amount that a player must match to remain in the game
@@ -91,8 +97,23 @@ namespace Poker
 
             bool roundOver = false;
             bool playerFolded = false;
+            int roundNum = 0;
+            int[] toDeal = { 0, 2, 1, 1, 1 }; // The number of cards to deal to commCards each round
             while (!roundOver)
             {
+                // Drawing cards to the community hand
+                try
+                {
+                    Draw(communityCards, toDeal[roundNum]);
+                }
+                catch
+                {
+                    Console.WriteLine("All cards drawn...");
+                    roundOver = true;
+                    break;
+                }
+
+                roundNum++;
                 // Displaying information about the round if the player is still in
                 if (!playerFolded)
                 {
@@ -108,7 +129,7 @@ namespace Poker
                 // Taking bets
                 for (int i = 0; i < playersIn.Count; i++)
                 {
-                    Console.WriteLine($"Player {i}'s turn");
+                    Console.WriteLine($"{playersIn[i].GetName()}'s turn");
                     
                     playersIn[i].SetCommCards(communityCards);
 
@@ -137,9 +158,13 @@ namespace Poker
                 {
                     roundOver = true;
                 }
-
-                Draw(communityCards, 2);
             }
+
+            // Calculating winner
+
+
+            // ROUND IS OVER, CLEARING COMMUNITY CARDS
+            pack.AddCard(communityCards);
         }
 
         // Used to easily transfer cards from pack to a hand
@@ -151,11 +176,14 @@ namespace Poker
             }
         }
 
-        // Used to check if there are any players with 0 chips if so, removes them
+        // Used to check if there are any players with 0 chips if so, removes them also clears each players hand and adds it back to pack
         public void CleanPlayers()
         {
             for (int i = 0; i < players.Count; i++)
             {
+                pack.AddCard(players[i].ClearHand());
+                players[i].Reset();
+
                 if (!players[i].HasChips())
                 {
                     players.RemoveAt(i);
