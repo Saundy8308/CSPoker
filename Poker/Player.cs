@@ -6,6 +6,8 @@ namespace Poker
     // Player class used to define anyone playing the game AI or otherwise
     class Player
     {
+        public int PLAYERID;
+
         public Hand pHand;
         protected Hand communityCards;
 
@@ -16,13 +18,15 @@ namespace Poker
         protected bool currentPlayer; // Is this the player
         protected bool computer; // Is this a computer
 
-        public Player(Hand hand, bool player, int startingChips = 500, string n = "Player")
+        public Player(Hand hand, bool player, int pId, int startingChips = 500, string n = "Player")
         {
             pHand = hand;
             currentPlayer = player;
             chips = startingChips;
             chipsIn = 0;
             name = n;
+
+            PLAYERID = pId;
         }
 
         public void SetCommCards(Hand commCards)
@@ -36,6 +40,17 @@ namespace Poker
             Hand temp = pHand;
             pHand.Clear();
             return temp;
+        }
+
+        public List<Tuple<int, int>> GetHandValue(bool output = false)
+        {
+            List<Card> allCards = new List<Card>(pHand.GetCards());
+            allCards.AddRange(communityCards.GetCards());
+
+            PokerHand totalHand = new PokerHand();
+            totalHand.SetCards(allCards);
+
+            return totalHand.GetValue(output);
         }
 
         // Adds chips to 'chips'
@@ -61,17 +76,27 @@ namespace Poker
         // Take bet
         public virtual int TakeBet(int matchBet) // Returns -1 if the player wants to Fold
         {
-            Console.WriteLine($"How much would you like to bet (-1 to fold, {matchBet - chipsIn} to call/check): ");
+            int displayNum = 0;
+            if (matchBet - chipsIn > 0)
+            {
+                displayNum = matchBet - chipsIn;
+            }
+
+            Console.WriteLine($"How much would you like to bet (-1 to fold, {displayNum} to call/check): ");
             bool goodIn = false;
             int bet = 0;
             while (!goodIn)
             {
                 string betIn = Console.ReadLine();
-                goodIn = Int32.TryParse(betIn, out bet) && bet <= chips && bet + chipsIn >= matchBet;
+                goodIn = Int32.TryParse(betIn, out bet) && bet <= chips && bet + chipsIn >= matchBet || bet < 0;
             }
 
-            chips -= bet;
-            chipsIn += bet;
+            if (bet >= 0)
+            {
+                chips -= bet;
+                chipsIn += bet;
+            }
+
             return bet;
         }
 
@@ -93,7 +118,7 @@ namespace Poker
 
     class Computer : Player
     {
-        public Computer(Hand hand) : base(hand, false, 500, "Computer")
+        public Computer(Hand hand, int pId, string n) : base(hand, false, pId, 500, n)
         {
             computer = true;
         }
@@ -101,8 +126,6 @@ namespace Poker
         // AI for valuing hand and placing bets
         public override int TakeBet(int matchBet)
         {
-            Console.WriteLine(matchBet);
-
             List<Card> allCards = new List<Card>(pHand.GetCards());
             allCards.AddRange(communityCards.GetCards());
 
@@ -117,21 +140,19 @@ namespace Poker
 
             foreach(Tuple<int,int> tup in value)
             {
-                roughValue += tup.Item1 * tup.Item2 / 4;
+                roughValue += (tup.Item1 * 4) * (tup.Item2 / 4);
             }
             
             Random rnd = new Random();
             int rndInt = rnd.Next(10) - 5; // Random int from 5 to -5
 
-            rndInt = 0; // TEST
+            // rndInt = 0;
 
             int val = roughValue + rndInt;
             if (val > 100) { val = 100; } // val is a number from 1 to 100 representing the hands value
 
             double percent = val / 100d;
-            Console.WriteLine(percent); // TEST
             int bet = Convert.ToInt32(chips * percent);
-            Console.WriteLine(bet); // TEST
 
             // RAISE, CHECK/CALL, FOLD
             rnd = new Random();
@@ -171,12 +192,14 @@ namespace Poker
         // Easy method for betting an amount of chips
         public int Bet(int amount)
         {
+            if (chips - amount < 0) // Going all in
+            {
+                Console.WriteLine($"{name} is going all in!");
+                amount = chips;
+            }
+
             chipsIn += amount;
             chips -= amount;
-            if (chips < 0) // ERROR CHECKING
-            {
-                Console.WriteLine("ERROR: chips is negative");
-            }
             return amount;
         }
     }

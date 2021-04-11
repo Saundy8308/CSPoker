@@ -194,12 +194,17 @@ namespace Poker
             // Because four of a kind is worth more than 4 (8)
             // Because three of a kind is worth more than 3 (4)
             int pairs = 0; // Number of pairs in hand
+            int pairsValue = 0;
             int tok = 0; // Value of Three of a kind in hand 0 if no TOK
             for (int i = 0; i < sets.Count; i++)
             {
                 if (sets[i].Item1 == 2)
                 {
                     pairs++;
+                    if (pairs < 2)
+                    {
+                        pairsValue += sets[i].Item2;
+                    }
                 }
                 else if (sets[i].Item1 == 3)
                 {
@@ -236,6 +241,10 @@ namespace Poker
             else if (flush)
             {
                 sets = new List<Tuple<int, int>>(){ new Tuple<int,int>(6, highest) };
+            }
+            else if (pairs >= 2) // Double pair
+            {
+                sets = new List<Tuple<int, int>>() { new Tuple<int, int>(3, pairsValue) };
             }
 
             // Order sets:
