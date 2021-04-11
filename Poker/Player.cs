@@ -58,16 +58,16 @@ namespace Poker
         {
             chips += amount;
         }
-        // As expected returns wether or nor this player has chips
+        // As expected returns whether or nor this player has chips
         public bool HasChips()
         {
             return chips > 0;
         }
+
         public int Chips()
         {
             return chips;
         }
-
         public int ChipsIn()
         {
             return chipsIn;

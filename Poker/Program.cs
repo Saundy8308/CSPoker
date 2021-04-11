@@ -12,20 +12,6 @@ namespace Poker
             Game game = new Game(5);
             game.Play();
             Console.WriteLine("GAME OVER...");
-
-            //PokerHand p1hand = new PokerHand();
-
-            /*p1hand.AddCard(pack.DealCard());
-            p1hand.AddCard(pack.DealCard());
-            p1hand.AddCard(pack.DealCard());
-            p1hand.AddCard(pack.DealCard());
-            p1hand.AddCard(pack.DealCard()); *///temp for testing
-
-            /*p1hand.AddCard(new Card(8,4));
-            p1hand.AddCard(new Card(8,1));
-            p1hand.AddCard(new Card(8,2));
-            p1hand.AddCard(new Card(2,3));
-            p1hand.AddCard(new Card(2,2));*/
         }
 
     }
@@ -168,7 +154,7 @@ namespace Poker
                     Thread.Sleep(1000);
                 }
 
-                if (playersIn.Count <= 1)
+                if (playersIn.Count <= 1) // Checking if the round should be over
                 {
                     roundOver = true;
                 }
@@ -265,7 +251,7 @@ namespace Poker
                 if (!players[i].HasChips())
                 {
                     players.RemoveAt(i);
-                    i--;                   //##################### POSSIBLE ERROR HERE
+                    i--;
                 }
             }
         }
