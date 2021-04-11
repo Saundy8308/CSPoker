@@ -154,6 +154,8 @@ namespace Poker
             double percent = val / 100d;
             int bet = Convert.ToInt32(chips * percent);
 
+            int percentOfChips = (chips / (chipsIn + 1)) * 10;
+
             // RAISE, CHECK/CALL, FOLD
             rnd = new Random();
             rndInt = rnd.Next(100);
@@ -164,7 +166,7 @@ namespace Poker
                 Console.WriteLine($"{name} is Raising to {bet}...");
                 return Bet(bet - chipsIn);
             }
-            else if (rndInt > val * matchBet)
+            else if (rndInt > val * percentOfChips)
             {
                 // Fold
                 Console.WriteLine($"{name} is Folding...");

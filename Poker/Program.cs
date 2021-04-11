@@ -157,6 +157,7 @@ namespace Poker
                 if (playersIn.Count <= 1) // Checking if the round should be over
                 {
                     roundOver = true;
+                    break;
                 }
             }
 
