@@ -47,11 +47,27 @@ namespace Poker
             //returns -1 if not present
         }
 
-        public void DisplayHand()
+        public void DisplayHand(bool doAmount = false, int number = 0)
         {
-            foreach(Card card in cards)
+            if (!doAmount || number > Size)
             {
-                Console.Write(card.ToString()+",");
+                number = Size;
+            }
+
+            for (int i = 0; i < number; i++)
+            {
+                if (i != number - 1)
+                {
+                    Console.Write(this[i].ToString() + ",");
+                }
+                else
+                {
+                    Console.Write(this[i].ToString());
+                }
+            }
+            for (int i = 0; i < Size-number; i++)
+            {
+                Console.Write("---");
             }
             Console.WriteLine();
         }
@@ -101,6 +117,11 @@ namespace Poker
 
         }
 
+        public List<Card> GetCards()
+        {
+            return cards;
+        }
+
         public void Clear()
         {
             cards.Clear();
@@ -112,7 +133,7 @@ namespace Poker
     public class PokerHand : Hand
     {
         // Returns the 'value' of the hand based on the scoring in hands.txt
-        public List<Tuple<int,int>> GetValue()
+        public List<Tuple<int,int>> GetValue(bool output=false)
         {
             Order();
 
@@ -159,7 +180,6 @@ namespace Poker
                         if (sets[ii].Item2 == cards[i].GetRank())
                         {
                             int temp = sets[ii].Item1;
-                            Console.WriteLine(temp);
                             sets[ii] = new Tuple<int, int>(temp + 1, cards[i].GetRank());
                             added = true;
                         }
@@ -174,12 +194,17 @@ namespace Poker
             // Because four of a kind is worth more than 4 (8)
             // Because three of a kind is worth more than 3 (4)
             int pairs = 0; // Number of pairs in hand
+            int pairsValue = 0;
             int tok = 0; // Value of Three of a kind in hand 0 if no TOK
             for (int i = 0; i < sets.Count; i++)
             {
                 if (sets[i].Item1 == 2)
                 {
                     pairs++;
+                    if (pairs < 2)
+                    {
+                        pairsValue += sets[i].Item2;
+                    }
                 }
                 else if (sets[i].Item1 == 3)
                 {
@@ -217,6 +242,10 @@ namespace Poker
             {
                 sets = new List<Tuple<int, int>>(){ new Tuple<int,int>(6, highest) };
             }
+            else if (pairs >= 2) // Double pair
+            {
+                sets = new List<Tuple<int, int>>() { new Tuple<int, int>(3, pairsValue) };
+            }
 
             // Order sets:
             bool done = false;
@@ -235,6 +264,16 @@ namespace Poker
                         done = false;
                     }
                 }
+            }
+
+            if (output)
+            {
+                Console.Write("{");
+                foreach (Tuple<int, int> tup in sets)
+                {
+                    Console.Write($"({tup.Item1},{tup.Item2}),");
+                }
+                Console.Write("}");
             }
 
             return sets;
@@ -260,6 +299,11 @@ namespace Poker
                     }
                 }
             }
+        }
+
+        public void SetCards(List<Card> toSet)
+        {
+            cards = toSet;
         }
     }
 }

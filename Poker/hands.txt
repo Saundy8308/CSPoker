@@ -7,4 +7,4 @@
 7  full house - worth rank of three of a kind
 8  four of a kind - worth rank of card
 9  straigh flush - worth highest card in straight
-10 royal flush - best in game, draw if two
+10 royal flush - best in game, you cannot have two
